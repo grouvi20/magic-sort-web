@@ -87,12 +87,12 @@ button {
   --cork-asset: url("assets/cork.png");
   --tube-aspect: 101 / 235; /* matches asset */
   /* Inset for the inner glass area where balls live.
-     Slightly larger than the painted bezel so balls never poke past
+     Sized comfortably inside the painted bezel so balls never poke past
      the highlight on either side or peek above the rim. */
-  --tube-pad-left: 17%;
-  --tube-pad-right: 17%;
-  --tube-pad-top: 19%;
-  --tube-pad-bottom: 13%;
+  --tube-pad-left: 22%;
+  --tube-pad-right: 22%;
+  --tube-pad-top: 21%;
+  --tube-pad-bottom: 14%;
 
   /* Star icon mask */
   --star-mask:
@@ -811,30 +811,39 @@ body.theme-light {
   82% { transform: translate(-1px, 0) rotate(-0.2deg); }
 }
 
-/* Cork overlay — pressed into the tube neck on completion */
+/* Cork overlay — drops into the tube neck on completion.
+   Sprite aspect 94/31 ≈ 3.03 (cropped from r2c2 corked-tube sprite).
+   Width 95% of tube so the painted oval inside the cork lines up with the
+   painted rim of the open tube; final translateY pulls the cork up so its
+   bottom sits at the tube's painted opening (~5-6% from container top). */
 .tube .cork {
   position: absolute;
   left: 50%;
   top: 0;
-  width: 64%;
-  aspect-ratio: 100 / 48;
+  width: 95%;
+  aspect-ratio: 94 / 31;
   background-image: var(--cork-asset);
   background-size: 100% 100%;
   background-repeat: no-repeat;
   pointer-events: none;
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45));
   opacity: 0;
-  transform: translate(-50%, calc(-100% + 8px)) scale(0.6) rotate(-12deg);
+  /* Pre-state: cork hovers a bit above the tube, slightly tilted */
+  transform: translate(-50%, -110%) scale(0.7) rotate(-8deg);
   transform-origin: 50% 100%;
   transition:
-    opacity 0.45s cubic-bezier(0.2, 0.9, 0.25, 1),
-    transform 0.55s cubic-bezier(0.18, 1.18, 0.32, 1.05);
+    opacity 0.4s cubic-bezier(0.2, 0.9, 0.25, 1),
+    transform 0.5s cubic-bezier(0.18, 1.18, 0.32, 1.05);
 }
 
 .tube.completed .cork {
   opacity: 1;
-  /* Bottom of the cork sits just inside the painted rim of the tube. */
-  transform: translate(-50%, calc(-1 * (100% - 14%) + 0px)) scale(1) rotate(0deg);
+  /* Final-state: cork pressed snug into the tube neck. The cork sprite has the
+     under-rim oval painted on its bottom edge — we line that oval up with the
+     painted rim of the open tube (which sits ~3-12% from the container top).
+     translateY(-12%) shifts the cork up by ~12% of its own height so the
+     painted under-rim ends up flush with the tube's painted glass top. */
+  transform: translate(-50%, -12%) scale(1) rotate(0deg);
 }
 
 .tube.completed {
