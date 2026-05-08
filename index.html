@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no"
+  />
+  <meta name="theme-color" content="#0e1330" />
+  <meta name="description" content="Magic Sort — головоломка с сортировкой цветов по колбам. Веб, для встраивания в iframe." />
+  <title>Magic Sort — головоломка с сортировкой</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect rx='6' width='32' height='32' fill='%237c5cff'/%3E%3Cpath d='M9 8h4v16H9zM15 14h4v10h-4zM21 4h4v20h-4z' fill='%23fff'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app" class="app">
+    <!-- Background decoration -->
+    <div class="bg-grid" aria-hidden="true"></div>
+
+    <!-- Top bar (visible inside game) -->
+    <header class="topbar" data-screen-show="game">
+      <button class="btn btn-icon" data-action="back" aria-label="Назад">
+        <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M14 6l-6 6 6 6 1.4-1.4L10.8 12l4.6-4.6z"/></svg>
+      </button>
+      <div class="topbar-info">
+        <div class="info-block">
+          <span class="info-label">Уровень</span>
+          <span id="level-num" class="info-value">1</span>
+        </div>
+        <div class="info-block">
+          <span class="info-label">Ходы</span>
+          <span id="moves" class="info-value">0</span>
+          <span id="move-limit" class="info-sub"></span>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-icon" data-action="undo" aria-label="Отменить ход">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+        </button>
+        <button class="btn btn-icon" data-action="hint" aria-label="Подсказка">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M9 21h6v-1H9v1zm3-19a7 7 0 0 0-4 12.7V18h8v-3.3A7 7 0 0 0 12 2z"/></svg>
+        </button>
+        <button class="btn btn-icon" data-action="restart" aria-label="Перезапуск">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M17.65 6.35A8 8 0 1 0 19.73 14H17.7A6 6 0 1 1 12 6a6 6 0 0 1 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- MENU -->
+    <section class="screen screen-menu" data-screen="menu">
+      <div class="logo">
+        <div class="logo-tubes" aria-hidden="true">
+          <span class="logo-tube"><i style="--c:var(--c1)"></i><i style="--c:var(--c2)"></i><i style="--c:var(--c1)"></i></span>
+          <span class="logo-tube"><i style="--c:var(--c3)"></i><i style="--c:var(--c4)"></i></span>
+          <span class="logo-tube"><i style="--c:var(--c2)"></i></span>
+        </div>
+        <h1 class="logo-title">Magic Sort</h1>
+        <p class="logo-sub">Спокойная головоломка для всех</p>
+      </div>
+      <div class="menu-actions">
+        <button class="btn btn-primary" data-action="play">Играть</button>
+        <button class="btn btn-secondary" data-action="levels">Выбор уровня</button>
+        <button class="btn btn-ghost" data-action="settings">Настройки</button>
+      </div>
+      <footer class="footer-note">v1 · можно встраивать в iframe</footer>
+    </section>
+
+    <!-- LEVEL SELECT -->
+    <section class="screen screen-levels" data-screen="levels" hidden>
+      <div class="screen-header">
+        <button class="btn btn-icon" data-action="back-to-menu" aria-label="Назад">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M14 6l-6 6 6 6 1.4-1.4L10.8 12l4.6-4.6z"/></svg>
+        </button>
+        <h2>Выбор уровня</h2>
+        <div></div>
+      </div>
+      <div id="levels-grid" class="levels-grid"></div>
+    </section>
+
+    <!-- GAME -->
+    <section class="screen screen-game" data-screen="game" hidden>
+      <div id="tubes" class="tubes"></div>
+      <div id="floating-ball" class="floating-ball" aria-hidden="true"></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="screen screen-settings" data-screen="settings" hidden>
+      <div class="screen-header">
+        <button class="btn btn-icon" data-action="back-to-menu" aria-label="Назад">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M14 6l-6 6 6 6 1.4-1.4L10.8 12l4.6-4.6z"/></svg>
+        </button>
+        <h2>Настройки</h2>
+        <div></div>
+      </div>
+      <div class="settings-list">
+        <label class="setting-row">
+          <span>Звук</span>
+          <input type="checkbox" id="setting-sound" />
+        </label>
+        <label class="setting-row">
+          <span>Вибрация (на мобильных)</span>
+          <input type="checkbox" id="setting-vibrate" />
+        </label>
+        <label class="setting-row">
+          <span>Тёмная тема</span>
+          <input type="checkbox" id="setting-dark" checked />
+        </label>
+        <button class="btn btn-ghost btn-danger" data-action="reset-progress">Сбросить прогресс</button>
+      </div>
+    </section>
+
+    <!-- WIN MODAL -->
+    <div class="modal" data-modal="win" hidden>
+      <div class="modal-card">
+        <div class="modal-emoji">✨</div>
+        <h3 class="modal-title">Уровень пройден!</h3>
+        <div class="stars" id="win-stars">
+          <span class="star"></span><span class="star"></span><span class="star"></span>
+        </div>
+        <div class="modal-stats">
+          <div><span class="info-label">Ходы</span><span id="win-moves">0</span></div>
+          <div><span class="info-label">Уровень</span><span id="win-level">1</span></div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" data-action="back-to-menu">Меню</button>
+          <button class="btn btn-primary" data-action="next-level">Следующий</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOSE MODAL -->
+    <div class="modal" data-modal="lose" hidden>
+      <div class="modal-card">
+        <div class="modal-emoji">⏳</div>
+        <h3 class="modal-title">Ходы кончились</h3>
+        <p class="modal-text">Не получилось собрать всё за лимит ходов. Попробуй ещё раз.</p>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" data-action="back-to-menu">Меню</button>
+          <button class="btn btn-primary" data-action="restart">Заново</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast" hidden></div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/levels.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/integration.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/input.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
