@@ -84,11 +84,15 @@ button {
 
   /* Tube asset */
   --tube-asset: url("assets/tube.png");
+  --cork-asset: url("assets/cork.png");
   --tube-aspect: 101 / 235; /* matches asset */
-  --tube-pad-left: 14%;
-  --tube-pad-right: 14%;
-  --tube-pad-top: 17%;
-  --tube-pad-bottom: 9%;
+  /* Inset for the inner glass area where balls live.
+     Slightly larger than the painted bezel so balls never poke past
+     the highlight on either side or peek above the rim. */
+  --tube-pad-left: 17%;
+  --tube-pad-right: 17%;
+  --tube-pad-top: 19%;
+  --tube-pad-bottom: 13%;
 
   /* Star icon mask */
   --star-mask:
@@ -749,7 +753,8 @@ body.theme-light {
   bottom: var(--tube-pad-bottom);
   display: flex;
   flex-direction: column-reverse;
-  gap: 2px;
+  gap: 1px;
+  overflow: hidden; /* belt + braces: never let a ball poke outside the glass */
 }
 
 .tube.selected {
@@ -804,6 +809,32 @@ body.theme-light {
   58% { transform: translate(-3px, 1px) rotate(-0.5deg); }
   70% { transform: translate(2px, -1px) rotate(0.3deg); }
   82% { transform: translate(-1px, 0) rotate(-0.2deg); }
+}
+
+/* Cork overlay — pressed into the tube neck on completion */
+.tube .cork {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 64%;
+  aspect-ratio: 100 / 48;
+  background-image: var(--cork-asset);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45));
+  opacity: 0;
+  transform: translate(-50%, calc(-100% + 8px)) scale(0.6) rotate(-12deg);
+  transform-origin: 50% 100%;
+  transition:
+    opacity 0.45s cubic-bezier(0.2, 0.9, 0.25, 1),
+    transform 0.55s cubic-bezier(0.18, 1.18, 0.32, 1.05);
+}
+
+.tube.completed .cork {
+  opacity: 1;
+  /* Bottom of the cork sits just inside the painted rim of the tube. */
+  transform: translate(-50%, calc(-1 * (100% - 14%) + 0px)) scale(1) rotate(0deg);
 }
 
 .tube.completed {
@@ -879,10 +910,11 @@ body.theme-light {
   filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.5)) saturate(0.45) brightness(0.75);
 }
 
-/* Ball — radial gradient + neon-tinted shadow */
+/* Ball — radial gradient + neon-tinted shadow.
+   Each ball is exactly 1/capacity of the inner glass height (minus gap). */
 .ball {
-  flex: 1 1 0;
-  min-height: 12px;
+  flex: 0 0 calc((100% - (var(--cap, 4) - 1) * 1px) / var(--cap, 4));
+  width: 100%;
   border-radius: 6px 6px 8px 8px;
   background:
     radial-gradient(

@@ -114,6 +114,12 @@
         ballsWrap.appendChild(ballEl);
       }
       tubeEl.appendChild(ballsWrap);
+
+      // Cork overlay (visible only when tube is completed via CSS).
+      var corkEl = document.createElement("div");
+      corkEl.className = "cork";
+      tubeEl.appendChild(corkEl);
+
       tubesEl.appendChild(tubeEl);
     }
   }
