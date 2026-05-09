@@ -84,15 +84,16 @@ button {
 
   /* Tube asset */
   --tube-asset: url("assets/tube.png");
-  --tube-corked-asset: url("assets/tube-corked.png");
-  --tube-aspect: 101 / 235; /* matches asset */
+  --cork-asset: url("assets/cork.png");
+  --tube-aspect: 130 / 448; /* matches asset (tall test-tube w/ rounded base) */
   /* Inset for the inner glass area where balls live.
-     Sized comfortably inside the painted bezel so balls never poke past
-     the highlight on either side or peek above the rim. */
-  --tube-pad-left: 22%;
-  --tube-pad-right: 22%;
-  --tube-pad-top: 21%;
-  --tube-pad-bottom: 14%;
+     Painted glass body of the new tube sits inside a thin outline (~12%
+     L/R) and has a clear rim region at the top + rounded base at the
+     bottom; pads keep balls comfortably inside. */
+  --tube-pad-left: 14%;
+  --tube-pad-right: 14%;
+  --tube-pad-top: 13%;
+  --tube-pad-bottom: 13%;
 
   /* Star icon mask */
   --star-mask:
@@ -811,30 +812,35 @@ body.theme-light {
   82% { transform: translate(-1px, 0) rotate(-0.2deg); }
 }
 
-/* Cork overlay — fades the open tube artwork into the corked-tube artwork on
-   completion. The .cork div fully covers the .tube container with the
-   corked-tube sprite as background; when .tube.completed it fades in (and
-   gets a subtle pop), making the cork look perfectly seated because it's
-   from the same artwork pack as the open tube. */
+/* Cork — small wooden plug that drops into the tube neck on completion.
+   Sprite aspect 101/110, positioned so its bottom plugs the rim opening
+   while the wider top sits above the tube. It overlaps ONLY the rim area
+   (top ~10% of the tube) so it cannot cover the balls inside. */
 .tube .cork {
   position: absolute;
-  inset: 0;
-  background-image: var(--tube-corked-asset);
+  left: 50%;
+  top: 0;
+  width: 55%;
+  aspect-ratio: 101 / 110;
+  background-image: var(--cork-asset);
   background-size: 100% 100%;
   background-repeat: no-repeat;
-  background-position: center;
   pointer-events: none;
+  filter: drop-shadow(0 5px 6px rgba(0, 0, 0, 0.45));
   opacity: 0;
-  transform: translateY(-2px) scale(0.985);
-  transform-origin: 50% 30%;
+  transform: translate(-50%, -120%) rotate(-12deg);
+  transform-origin: 50% 100%;
   transition:
-    opacity 0.42s cubic-bezier(0.2, 0.9, 0.25, 1),
-    transform 0.5s cubic-bezier(0.18, 1.18, 0.32, 1.05);
+    opacity 0.4s cubic-bezier(0.2, 0.9, 0.25, 1),
+    transform 0.55s cubic-bezier(0.18, 1.18, 0.32, 1.05);
 }
 
 .tube.completed .cork {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  /* Final state: cork plugged into the rim — bottom of the cork sits ~9%
+     into the tube (well within the painted rim region), wider top stays
+     visible above the glass. */
+  transform: translate(-50%, -50%) rotate(0deg);
 }
 
 .tube.completed {
