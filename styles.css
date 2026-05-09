@@ -838,12 +838,12 @@ body.theme-light {
 
 .tube.completed .cork {
   opacity: 1;
-  /* Final state: cork seated DEEP into the tube neck. Painted glass rim of
-     the open tube sits at ~3-12% of container height; we push the cork down
-     so its bottom sits well below the rim opening (cork ≈ 21px tall on a
-     ~155px tube, so translateY +12% = +2.5px gives cork bottom at ~24px,
-     fully covering the rim). */
-  transform: translate(-50%, 12%) scale(1) rotate(0deg);
+  /* Final state: cork pressed snug into the tube neck. The painted glass rim
+     of the open tube spans ~3% to ~13% of container height. We push the
+     cork DOWN past the rim opening (translateY +30%) so the cork's painted
+     under-rim sits clearly below the glass rim — looks like it's plugging
+     the bottle, not floating on top of it. */
+  transform: translate(-50%, 30%) scale(1) rotate(0deg);
 }
 
 .tube.completed {
