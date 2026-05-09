@@ -115,10 +115,13 @@
       }
       tubeEl.appendChild(ballsWrap);
 
-      // Cork overlay (visible only when tube is completed via CSS).
-      var corkEl = document.createElement("div");
-      corkEl.className = "cork";
-      tubeEl.appendChild(corkEl);
+      // Glass overlay — the tube artwork rendered ABOVE the balls so the
+      // outline + highlights appear on top of them, making the balls look
+      // like they're physically inside the glass. Tube PNG has a fully
+      // transparent interior, so balls remain visible through it.
+      var glassEl = document.createElement("div");
+      glassEl.className = "tube-glass";
+      tubeEl.appendChild(glassEl);
 
       tubesEl.appendChild(tubeEl);
     }

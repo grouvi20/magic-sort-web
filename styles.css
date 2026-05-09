@@ -84,7 +84,6 @@ button {
 
   /* Tube asset */
   --tube-asset: url("assets/tube.png");
-  --cork-asset: url("assets/cork.png");
   --tube-aspect: 130 / 448; /* matches asset (tall test-tube w/ rounded base) */
   /* Inset for the inner glass area where balls live.
      Painted glass body of the new tube sits inside a thin outline (~12%
@@ -706,8 +705,9 @@ body.theme-light {
   perspective: 1200px;
 }
 
-/* Tube uses the painted asset as background. Inner balls live inside .tube-balls
-   which is inset to match the painted glass interior. */
+/* Tube container holds the balls underneath and an absolute .tube-glass
+   overlay on top that paints the artwork (outline + glass highlights) over
+   the balls so they look like they're physically inside the glass. */
 .tube {
   --slot: clamp(28px, 7vw, 46px);
   --tube-w: calc(var(--slot) / 0.74);
@@ -715,9 +715,6 @@ body.theme-light {
   width: var(--tube-w);
   aspect-ratio: var(--tube-aspect);
   cursor: pointer;
-  background-image: var(--tube-asset);
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
   filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.55));
   transition:
     transform 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.1),
@@ -726,6 +723,17 @@ body.theme-light {
   transform: translateY(14px);
   animation: tubeAppear 0.5s cubic-bezier(0.2, 0.9, 0.25, 1) forwards;
   animation-delay: var(--d, 0ms);
+}
+
+/* Tube glass artwork — sits ABOVE the balls, has a fully transparent interior
+   in the PNG so balls show through; only outline + highlights overlay them. */
+.tube-glass {
+  position: absolute;
+  inset: 0;
+  background-image: var(--tube-asset);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  pointer-events: none;
 }
 
 .tube:hover {
@@ -810,37 +818,6 @@ body.theme-light {
   58% { transform: translate(-3px, 1px) rotate(-0.5deg); }
   70% { transform: translate(2px, -1px) rotate(0.3deg); }
   82% { transform: translate(-1px, 0) rotate(-0.2deg); }
-}
-
-/* Cork — small wooden plug that drops into the tube neck on completion.
-   Sprite aspect 101/110, positioned so its bottom plugs the rim opening
-   while the wider top sits above the tube. It overlaps ONLY the rim area
-   (top ~10% of the tube) so it cannot cover the balls inside. */
-.tube .cork {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  width: 55%;
-  aspect-ratio: 101 / 110;
-  background-image: var(--cork-asset);
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  pointer-events: none;
-  filter: drop-shadow(0 5px 6px rgba(0, 0, 0, 0.45));
-  opacity: 0;
-  transform: translate(-50%, -120%) rotate(-12deg);
-  transform-origin: 50% 100%;
-  transition:
-    opacity 0.4s cubic-bezier(0.2, 0.9, 0.25, 1),
-    transform 0.55s cubic-bezier(0.18, 1.18, 0.32, 1.05);
-}
-
-.tube.completed .cork {
-  opacity: 1;
-  /* Final state: cork plugged into the rim — bottom of the cork sits ~9%
-     into the tube (well within the painted rim region), wider top stays
-     visible above the glass. */
-  transform: translate(-50%, -50%) rotate(0deg);
 }
 
 .tube.completed {
