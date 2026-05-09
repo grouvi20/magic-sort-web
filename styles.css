@@ -84,7 +84,7 @@ button {
 
   /* Tube asset */
   --tube-asset: url("assets/tube.png");
-  --cork-asset: url("assets/cork.png");
+  --tube-corked-asset: url("assets/tube-corked.png");
   --tube-aspect: 101 / 235; /* matches asset */
   /* Inset for the inner glass area where balls live.
      Sized comfortably inside the painted bezel so balls never poke past
@@ -811,39 +811,30 @@ body.theme-light {
   82% { transform: translate(-1px, 0) rotate(-0.2deg); }
 }
 
-/* Cork overlay — drops into the tube neck on completion.
-   Sprite aspect 94/31 ≈ 3.03 (cropped from r2c2 corked-tube sprite).
-   Width 95% of tube so the painted oval inside the cork lines up with the
-   painted rim of the open tube; final translateY pulls the cork up so its
-   bottom sits at the tube's painted opening (~5-6% from container top). */
+/* Cork overlay — fades the open tube artwork into the corked-tube artwork on
+   completion. The .cork div fully covers the .tube container with the
+   corked-tube sprite as background; when .tube.completed it fades in (and
+   gets a subtle pop), making the cork look perfectly seated because it's
+   from the same artwork pack as the open tube. */
 .tube .cork {
   position: absolute;
-  left: 50%;
-  top: 0;
-  width: 95%;
-  aspect-ratio: 94 / 31;
-  background-image: var(--cork-asset);
+  inset: 0;
+  background-image: var(--tube-corked-asset);
   background-size: 100% 100%;
   background-repeat: no-repeat;
+  background-position: center;
   pointer-events: none;
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45));
   opacity: 0;
-  /* Pre-state: cork hovers a bit above the tube, slightly tilted */
-  transform: translate(-50%, -110%) scale(0.7) rotate(-8deg);
-  transform-origin: 50% 100%;
+  transform: translateY(-2px) scale(0.985);
+  transform-origin: 50% 30%;
   transition:
-    opacity 0.4s cubic-bezier(0.2, 0.9, 0.25, 1),
+    opacity 0.42s cubic-bezier(0.2, 0.9, 0.25, 1),
     transform 0.5s cubic-bezier(0.18, 1.18, 0.32, 1.05);
 }
 
 .tube.completed .cork {
   opacity: 1;
-  /* Final state: cork pressed snug into the tube neck. The painted glass rim
-     of the open tube spans ~3% to ~13% of container height. We push the
-     cork DOWN past the rim opening (translateY +30%) so the cork's painted
-     under-rim sits clearly below the glass rim — looks like it's plugging
-     the bottle, not floating on top of it. */
-  transform: translate(-50%, 30%) scale(1) rotate(0deg);
+  transform: translateY(0) scale(1);
 }
 
 .tube.completed {
