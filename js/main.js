@@ -175,7 +175,7 @@
     UI.hideModals();
     UI.setLevelNum(n);
     UI.setMoves(0, level.moveLimit);
-    UI.renderTubes(level);
+    UI.renderTubes(level, { stagger: true });
     UI.showScreen("game");
     Integration.emit("levelStart", { id: n });
   }
@@ -223,6 +223,7 @@
 
   function onTubeTap(idx) {
     if (!current) return;
+    if (current.animating) return;
     var level = current.level;
     if (level.lockedSet && level.lockedSet.has(idx)) {
       UI.toast("Контейнер заблокирован");
@@ -255,10 +256,14 @@
     }
 
     current.history.push(snapshot(level));
-    GameState.applyMove(level, current.selected, idx, move.count);
-    current.moves++;
     var fromIdx = current.selected;
     current.selected = null;
+
+    // Capture src ball positions BEFORE state mutation (for FLIP animation).
+    var captured = UI.captureMove(fromIdx, move.count);
+
+    GameState.applyMove(level, fromIdx, idx, move.count);
+    current.moves++;
 
     UI.setMoves(current.moves, level.moveLimit);
     UI.renderTubes(level);
@@ -269,16 +274,21 @@
       moves: current.moves,
     });
 
-    maybeUnlockTubes(level);
-    UI.renderTubes(level);
+    current.animating = true;
+    UI.flyBalls(captured, idx, function () {
+      current.animating = false;
+      var unlocked = maybeUnlockTubes(level);
+      if (unlocked) UI.renderTubes(level);
 
-    if (GameState.isWon(level)) {
-      finishWin();
-      return;
-    }
-    if (level.moveLimit && current.moves >= level.moveLimit) {
-      finishLose("moveLimit");
-    }
+      if (GameState.isWon(level)) {
+        // Brief delay so the player sees the final ball land
+        setTimeout(finishWin, 240);
+        return;
+      }
+      if (level.moveLimit && current.moves >= level.moveLimit) {
+        setTimeout(function () { finishLose("moveLimit"); }, 200);
+      }
+    });
   }
 
   function undo() {
